@@ -1,10 +1,10 @@
-CREATE DATABASE Escola;
-
+USE meubanco;
+DROP TABLE IF EXISTS Alunos;
 CREATE TABLE Alunos (
-	id_alunos INT AUTO_INCREMENT PRIMARY KEY,
+	id_aluno INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR (100) NOT NULL,
     data_nascimento DATE,
-    sexo ENUM ('Masculino', 'Feminino', 'Outro') DEFAULT 'Outro',
+    sexo ENUM('Masculino', 'Feminino', 'Outro') DEFAULT 'Outro',
 	email VARCHAR (100),
     telefone VARCHAR (15),
     endereco VARCHAR (225),
@@ -13,8 +13,9 @@ CREATE TABLE Alunos (
     data_saida DATE
     );
     
+DROP TABLE IF EXISTS Professores;
 CREATE TABLE Professores (
-	id_prefessor INT AUTO_INCREMENT PRIMARY KEY,
+	id_professor INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR (100) NOT NULL,
     especialidade VARCHAR (100),
     formacao VARCHAR (100),
@@ -23,9 +24,16 @@ CREATE TABLE Professores (
     data_adimicao DATE
 );
 
-CREATE TABLE Disciplinas ( 
+DROP TABLE IF EXISTS Disciplinas;
+CREATE TABLE Disciplinas (
+    id_disciplina INT AUTO_INCREMENT PRIMARY KEY,  
+    nome_disciplina VARCHAR(100) NOT NULL
+);
+
+DROP TABLE IF EXISTS Matriculas;
+CREATE TABLE Matriculas ( 
 	id_matricula INT AUTO_INCREMENT PRIMARY KEY,
-    id_alunos INT,
+    id_aluno INT,
     id_disciplina INT,
     ano_letivo INT,
     nota_final DECIMAL (5,2),
@@ -33,9 +41,10 @@ CREATE TABLE Disciplinas (
     status ENUM ('Aprovado', 'Reprovado', 'Recuperacao')DEFAULT 'Aprovado',
     data_matricula DATE,
     FOREIGN KEY (id_alunos) REFERENCES Alunos(id_alunos),
-    FOREIGN KEY (id_disciplina) REFERENCES Alunos(id_disciplina)
+    FOREIGN KEY (id_disciplina) REFERENCES Disciplinas(id_disciplina)
 );
 
+DROP TABLE IF EXISTS Aulas;
 CREATE TABLE Aulas (
 	id_aula INT AUTO_INCREMENT PRIMARY KEY,
     id_professor INT,
@@ -45,10 +54,11 @@ CREATE TABLE Aulas (
     hora_inicio TIME,
     hora_fim TIME,
     sala VARCHAR (10),
-    FOREIGN KEY (id_professores) REFERENCES Alunos(id_professores),
+    FOREIGN KEY (id_professor) REFERENCES Professores(id_professor),
     FOREIGN KEY (id_disciplina) REFERENCES Disciplinas(id_disciplina)
 );
 
+DROP TABLE IF EXISTS Turmas;
 CREATE TABLE Turmas (
 	id_turma INT AUTO_INCREMENT PRIMARY KEY,
     nome_turma VARCHAR (50),
@@ -58,6 +68,7 @@ CREATE TABLE Turmas (
     FOREIGN KEY (id_disciplina) REFERENCES Disciplinas(id_disciplina)
 );
 
+DROP TABLE IF EXISTS Frequencias;
 CREATE TABLE Frequencias (
 	id_frequencia INT AUTO_INCREMENT PRIMARY KEY,
     id_aula INT,
@@ -67,7 +78,8 @@ CREATE TABLE Frequencias (
     FOREIGN KEY (id_aluno) REFERENCES Alunos(id_aluno)
 );
     
-CREATE TABLE Hiatorico_Notas (
+DROP TABLE IF EXISTS Historico_notas;
+CREATE TABLE Historico_Notas (
 	id_historico INT AUTO_INCREMENT PRIMARY KEY,
     id_aluno INT,
     id_disciplina INT,
@@ -78,26 +90,29 @@ CREATE TABLE Hiatorico_Notas (
     FOREIGN KEY (id_disciplina) REFERENCES Disciplinas(id_disciplina)
 );
 
+DROP TABLE IF EXISTS Comentarios_professores;
 CREATE TABLE Comentarios_Professores (
 	id_comentario INT AUTO_INCREMENT PRIMARY KEY,
 	id_professor INT,
     id_aluno INT,
     comentario TEXT,
     data_comentario DATE,
-    FOREIGN KEY (id_professores) REFERENCES Alunos(id_professores),
+    FOREIGN KEY (id_professor) REFERENCES Professores(id_professor),
     FOREIGN KEY (id_aluno) REFERENCES Alunos(id_aluno)
 );
 
+DROP TABLE IF EXISTS Pagamentos;
 CREATE TABLE Pgamentos (
 	id_pagamento INT AUTO_INCREMENT PRIMARY KEY,
     id_aluno INT,
     valor DECIMAL(10,2),
     data_pagamento DATE,
-    metodo_pagamento ENUM('Boleto', 'Cartao', 'Tranferencia', 'Dinheiro'),
-    satus_pagamento ENUM('Pago', 'Pendente', 'Cancelado') DEFAULT 'Pendente',
+    metodo_pagamento ENUM('Boleto', 'Cartao', 'Transferencia', 'Dinheiro'),
+    status_pagamento ENUM('Pago', 'Pendente', 'Cancelado') DEFAULT 'Pendente',
     FOREIGN KEY (id_aluno) REFERENCES Alunos(id_aluno)
 );
 
+DROP TABLE IF EXISTS Enderecos;
 CREATE TABLE Enderecos (
 	id_endereco INT AUTO_INCREMENT PRIMARY KEY,
     id_aluno INT,
@@ -108,6 +123,7 @@ CREATE TABLE Enderecos (
     FOREIGN KEY (id_aluno) REFERENCES Alunos(id_aluno)
 );
 
+DROP TABLE IF EXISTS Documentos;
 CREATE TABLE Documentos (
 	id_documento INT AUTO_INCREMENT PRIMARY KEY,
     id_aluno INT,
@@ -117,6 +133,7 @@ CREATE TABLE Documentos (
     FOREIGN KEY (id_aluno) REFERENCES Alunos(id_aluno)
 );
 
+DROP TABLE IF EXISTS Comunicados;
 CREATE TABLE Comunicados (
 	id_comunicado INT AUTO_INCREMENT PRIMARY KEY,
     id_turma INT,
@@ -125,6 +142,7 @@ CREATE TABLE Comunicados (
     FOREIGN KEY (id_turma) REFERENCES Turmas(id_turma)
 );
 
+DROP TABLE IF EXISTS Notificacoes;
 CREATE TABLE Notificacoes (
 	id_notificacao INT AUTO_INCREMENT PRIMARY KEY,
 	id_aluno INT,
@@ -135,17 +153,22 @@ CREATE TABLE Notificacoes (
     FOREIGN KEY (id_aluno) REFERENCES Alunos(id_aluno)
 );
 
+DROP TABLE IF EXISTS Avaliacoes;
 CREATE TABLE Avaliacoes (
 	id_avaliacao INT AUTO_INCREMENT PRIMARY KEY,
 	id_disciplina INT,
     tipo_avaliacao ENUM('Prova', 'Trabalho', 'Projeto', 'Outro'),
-    descriacao TEXT,
+    descricao TEXT,
     data_avaliacao DATE,
 	FOREIGN KEY (id_disciplina) REFERENCES Disciplinas(id_disciplina)
 );
 
+DROP TABLE IF EXISTS Nota_Avaliacoes;
 CREATE TABLE Notas_Avaliacoes (
 	id_nota_avaliacao INT AUTO_INCREMENT PRIMARY KEY,
     id_avaliacao INT,
-    
+    id_aluno INT,
+    nota DECIMAL (5,2),
+	FOREIGN KEY (id_avaliacao) REFERENCES Avaliacoes(id_avaliacao),
+	FOREIGN KEY (id_aluno) REFERENCES Alunos(id_aluno)
 );
